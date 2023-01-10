@@ -108,7 +108,7 @@ doc_events = {
 	}
 }
 
-after_migrate = "mat_customization.custom_field.create_custom_fields"
+after_migrate = "mat_customization.custom_field.update_custom_fields"
 
 # Scheduled Tasks
 # ---------------
