@@ -102,13 +102,13 @@ app_license = "MIT"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-#	"*": {
-#		"on_update": "method",
-#		"on_cancel": "method",
-#		"on_trash": "method"
-#	}
-# }
+doc_events = {
+	"Item": {
+		"on_update": "mat_customization.utils.make_booking_service_item"
+	}
+}
+
+after_migrate = "mat_customization.custom_field.create_custom_fields"
 
 # Scheduled Tasks
 # ---------------
