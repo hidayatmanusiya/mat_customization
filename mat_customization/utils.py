@@ -48,7 +48,7 @@ def count_days(doc, item):
     start_date = item.start_date
     end_date = item.end_date
     holiday_list = item.holiday_list
-    hoiday_list_dates = frappe.db.get_list("Holiday", fields=["holiday_date"], pluck= 'holiday_date')
+    hoiday_list_dates = frappe.db.get_all("Holiday", fields=["holiday_date"], pluck= 'holiday_date')
 
     a = pd.date_range(start=start_date, end=end_date)
 
