@@ -1,4 +1,5 @@
 import frappe
+import pandas as pd
 
 
 def make_booking_service_item(doc, method):
@@ -35,3 +36,35 @@ def validate_service_item(doc):
         is_stock_item = frappe.db.get_value("Item",doc.service_item,"is_stock_item")
         if is_stock_item:
             frappe.throw("Stock Item can't be use as service item.")
+
+def count_working_hours(doc, method):
+    items = doc.items
+    for item in items:
+        if item.holiday_list and item.uom:
+            days =  count_days(doc, item)
+            count_hours(item, days)
+
+def count_days(doc, item):
+    start_date = item.start_date
+    end_date = item.end_date
+    holiday_list = item.holiday_list
+    hoiday_list_dates = frappe.db.get_list("Holiday", fields=["holiday_date"], pluck= 'holiday_date')
+
+    a = pd.date_range(start=start_date, end=end_date)
+
+    days = 0
+
+    for date in a:
+        if date in hoiday_list_dates:
+            continue
+        else :
+            days += 1
+    
+    return days
+
+def count_hours(item, days):
+    hours = frappe.db.get_value("UOM", item.uom, "hours")
+    working_hours = days * hours
+    item.update({
+            "working_hours": working_hours,
+        })

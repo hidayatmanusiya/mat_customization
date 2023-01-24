@@ -105,6 +105,9 @@ app_license = "MIT"
 doc_events = {
 	"Item": {
 		"on_update": "mat_customization.utils.make_booking_service_item"
+	},
+	"Sales Order": {
+		"validate": "mat_customization.utils.count_working_hours"
 	}
 }
 
