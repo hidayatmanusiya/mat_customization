@@ -45,10 +45,14 @@ def count_working_hours(doc, method):
             count_hours(item, days)
 
 def count_days(doc, item):
+    hoiday_list_dates = []
     start_date = item.start_date
     end_date = item.end_date
     holiday_list = item.holiday_list
-    hoiday_list_dates = frappe.db.get_all("Holiday", fields=["holiday_date"], pluck= 'holiday_date')
+    holidays = frappe.get_doc("Holiday List", holiday_list)
+    for row in holidays.holidays:
+        hoiday_list_dates.append(row.holiday_date)
+    
 
     a = pd.date_range(start=start_date, end=end_date)
 
@@ -59,7 +63,6 @@ def count_days(doc, item):
             continue
         else :
             days += 1
-    
     return days
 
 def count_hours(item, days):
