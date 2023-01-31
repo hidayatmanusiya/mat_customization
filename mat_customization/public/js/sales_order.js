@@ -15,7 +15,7 @@ frappe.ui.form.on('Sales Order Item', {
 
 var calculate_working_hour = function (frm, cdt, cdn) {
 	var row = locals[cdt][cdn];
-	if (row.start_date && row.end_date && row.holiday_list && row.uom)
+	if (row.start_date && row.end_date && row.holiday_list && row.uom){
 		frappe.call({
 			method: 'mat_customization.utils.calculate_working_hour',
 			type: 'POST',
@@ -28,5 +28,5 @@ var calculate_working_hour = function (frm, cdt, cdn) {
 				}
 			}
 		});
-
+	}
 }
