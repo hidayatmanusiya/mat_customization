@@ -27,7 +27,7 @@ def update_custom_fields():
         "Sales Order Item": [
             dict(fieldname='abc',
                  fieldtype='Section Break',
-                 insert_after='item_name',
+                 insert_after='stock_qty',
                  print_hide=1),
             dict(fieldname='start_date',
                  label='Start Date',
@@ -98,7 +98,7 @@ def update_custom_fields():
         "Sales Invoice Item": [
             dict(fieldname='abc',
                  fieldtype='Section Break',
-                 insert_after='item_name',
+                 insert_after='stock_qty',
                  print_hide=1),
             dict(fieldname='start_date',
                  label='Start Date',
