@@ -7,8 +7,10 @@ frappe.ui.form.on('Sales Order Item', {
 	},
 	holiday_list(frm, cdt, cdn) {
 		calculate_working_hour(frm, cdt, cdn)
+	},
+	uom(frm, cdt, cdn) {
+		calculate_working_hour(frm, cdt, cdn)
 	}
-
 })
 
 var calculate_working_hour = function (frm, cdt, cdn) {
