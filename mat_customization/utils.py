@@ -1,6 +1,6 @@
 import frappe
 import pandas as pd
-
+import json
 
 def make_booking_service_item(doc, method):
     if doc.booking_item == 1:
@@ -37,14 +37,17 @@ def validate_service_item(doc):
         if is_stock_item:
             frappe.throw("Stock Item can't be use as service item.")
 
+
 def count_working_hours(doc, method):
     items = doc.items
     for item in items:
         if item.holiday_list and item.uom:
-            days =  count_days(doc, item)
+            days =  count_days(item)
             count_hours(item, days)
 
-def count_days(doc, item):
+
+
+def count_days(item):
     hoiday_list_dates = []
     start_date = item.start_date
     end_date = item.end_date
@@ -71,3 +74,36 @@ def count_hours(item, days):
     item.update({
             "working_hours": working_hours,
         })
+
+
+@frappe.whitelist()
+def calculate_working_hour(item):
+    item = json.loads(item)
+    days =  _count_days(item)
+    return _count_hours(item, days)
+
+def _count_days(item):
+    hoiday_list_dates = []
+    start_date = item['start_date']
+    end_date = item['end_date']
+    holiday_list = item['holiday_list']
+    holidays = frappe.get_doc("Holiday List", holiday_list)
+    for row in holidays.holidays:
+        hoiday_list_dates.append(row.holiday_date)
+    
+
+    a = pd.date_range(start=start_date, end=end_date)
+
+    days = 0
+
+    for date in a:
+        if date in hoiday_list_dates:
+            continue
+        else :
+            days += 1
+    return days
+
+def _count_hours(item, days):
+    hours = frappe.db.get_value("UOM", item['uom'], "hours")
+    working_hours = days * hours
+    return working_hours
