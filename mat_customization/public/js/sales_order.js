@@ -1,3 +1,12 @@
+frappe.ui.form.on('Sales Order', "onload", function(frm){
+	frm.set_query("contract", function() {
+        return {
+            "filters": {
+                "party_name": frm.doc.customer
+            }
+        };
+    });
+})
 frappe.ui.form.on('Sales Order Item', {
 	start_date(frm, cdt, cdn) {
 		calculate_working_hour(frm, cdt, cdn)
