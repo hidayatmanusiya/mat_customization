@@ -107,3 +107,24 @@ def _count_hours(item, days):
     hours = frappe.db.get_value("UOM", item['uom'], "hours")
     working_hours = days * hours
     return working_hours
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def custom_query(doctype, txt, searchfield, start, page_len, filters):
+    if filters.get("party_name"):
+        return frappe.db.sql("""
+            select 
+                contact.name
+            from 
+                `tabContact` as contact, 
+                `tabDynamic Link` as contact_child_table
+            where 
+                contact.name = contact_child_table.parent
+                and contact_child_table.link_doctype = 'Customer'
+                and contact_child_table.link_name LIKE %(party_name)s
+        """,{
+                'party_name': filters.get('party_name'),
+            }
+        )
+    else:
+        return {}
