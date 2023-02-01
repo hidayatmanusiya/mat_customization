@@ -24,6 +24,14 @@ def update_custom_fields():
                  depends_on='eval:!doc.booking_item',
                  read_only=0, print_hide=1)
         ],
+        "Sales Order": [
+            dict(fieldname='contract',
+                 label='Contract',
+                 fieldtype='Link',
+                 insert_after='customer',
+                 options='Contract',
+                 print_hide=1),
+        ],
         "Sales Order Item": [
             dict(fieldname='abc',
                  fieldtype='Section Break',
@@ -176,7 +184,30 @@ def update_custom_fields():
                  fieldtype='Int',
                  insert_after='clm_brk',
                  print_hide=1),
-        ]
+        ],
+        "Contract": [
+            dict(fieldname='1aaa',
+                 fieldtype='Section Break',
+                 insert_after='end_date',
+                 print_hide=1),
+            dict(fieldname='item_detail',
+                 label='Item Detail',
+                 fieldtype='Table',
+                 insert_after='1aaa',
+                 options= 'Item Detail',
+                 print_hide=1,
+                 allow_bulk_edit=1),
+            dict(fieldname='2aaa',
+                 fieldtype='Section Break',
+                 insert_after='item_detail',
+                 print_hide=1),
+            dict(fieldname='contact_table',
+                 label='Contact Table',
+                 fieldtype='Table',
+                 insert_after='2aaa',
+                 options= 'Contact Table',
+                 print_hide=1),
+        ],
     }
 
     create_custom_fields(custom_fields)
