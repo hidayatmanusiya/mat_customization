@@ -131,12 +131,9 @@ def custom_query(doctype, txt, searchfield, start, page_len, filters):
 
 @frappe.whitelist()
 def make_item_price(doc, method):
-    print(doc.start_date)
-    print(doc.end_date)
     for row in doc.item_detail:
         print(row)
         flag = validate_item_price(row, doc.start_date, doc.end_date)
-        print(flag)
 
         if flag == "create":
             create_item_price(row, doc.start_date, doc.end_date)
@@ -164,12 +161,16 @@ def create_item_price(item, start_date, end_date):
             "price_list": price_list.selling_price_list
         })
         item_price.save(ignore_permissions=True)
-        print(item_price)
-        frappe.msgprint("Created")
+        # print(item_price)
+        # frappe.msgprint("Created")
 
 def update_item_price(item, start_date, end_date):
     price_list = frappe.get_cached_doc("Selling Settings")
-    item_price = frappe.get_doc("Item Price", {"item_code": item.item, "valid_from": start_date, "valid_upto": end_date})
+    item_price = frappe.get_doc("Item Price", {
+        "item_code": item.item, 
+        "valid_from": start_date, 
+        "valid_upto": end_date
+        })
     item_price.update({
         "item_code": item.item,
         "item_name": item.item_name,
@@ -180,8 +181,8 @@ def update_item_price(item, start_date, end_date):
         "price_list": price_list.selling_price_list
     })
     item_price.save(ignore_permissions=True)
-    print(item_price)
-    frappe.msgprint("Updated")
+    # print(item_price)
+    # frappe.msgprint("Updated")
 
 def validate_item_price(item, start_date, end_date):
     create = False
