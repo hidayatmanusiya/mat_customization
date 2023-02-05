@@ -164,7 +164,7 @@ def update_item_price(item, start_date, end_date):
         "item_code": item.item, 
         "valid_from": start_date, 
         "valid_upto": end_date,
-        # "uom": item.uom
+        "uom": item.uom
         })
     item_price.update({
         "item_code": item.item,
