@@ -111,7 +111,10 @@ doc_events = {
 	},
 	"Sales Order": {
 		"validate": "mat_customization.utils.count_working_hours"
-	}
+	},
+	"Contract": {
+        "validate": "mat_customization.utils.make_item_price"
+    }
 }
 
 after_migrate = "mat_customization.custom_field.update_custom_fields"
