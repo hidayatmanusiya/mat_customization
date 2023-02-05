@@ -190,7 +190,9 @@ def validate_item_price(item, start_date, end_date):
         "item_code": item.item, 
         "item_name": item.item_name, 
         "uom": item.uom, 
-        "price_list_rate": item.price}):
+        "price_list_rate": item.price,
+        "valid_from": start_date,
+        "valid_upto": end_date}):
         create = True
     if create and not frappe.db.exists("Item Price", {"price_list_rate": item.price}) and validate_existing_item_price(start_date, end_date):
         return "update"
@@ -199,7 +201,7 @@ def validate_item_price(item, start_date, end_date):
 
 def validate_existing_item_price(start_date, end_date):
     update = False
-    if frappe.db.exists("Item Price", {"valid_from": start_date}) and frappe.db.exists("Item Price", {"valid_upto": end_date}):
+    if frappe.db.exists("Item Price", {"valid_from": start_date, "valid_upto": end_date}):
         update = True
     return update
 
