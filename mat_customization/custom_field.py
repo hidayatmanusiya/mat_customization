@@ -31,6 +31,11 @@ def update_custom_fields():
                  insert_after='customer',
                  options='Contract',
                  print_hide=1),
+            dict(fieldname='change_item_name',
+                 label='Change Item Name',
+                 fieldtype='Button',
+                 insert_after='delivery_date',
+                 print_hide=1),
         ],
         "Sales Invoice": [
             dict(fieldname='contract',
@@ -194,6 +199,11 @@ def update_custom_fields():
                  print_hide=1),
         ],
         "Contract": [
+            dict(fieldname='due_date',
+                 label='Due Date',
+                 fieldtype='Date',
+                 insert_after='start_date',
+                 print_hide=1),
             dict(fieldname='1aaa',
                  fieldtype='Section Break',
                  insert_after='end_date',

@@ -128,3 +128,91 @@ def custom_query(doctype, txt, searchfield, start, page_len, filters):
         )
     else:
         return {}
+
+@frappe.whitelist()
+def make_item_price(doc, method):
+    print(doc.start_date)
+    print(doc.end_date)
+    for row in doc.item_detail:
+        print(row)
+        flag = validate_item_price(row, doc.start_date, doc.end_date)
+        print(flag)
+
+        if flag == "create":
+            create_item_price(row, doc.start_date, doc.end_date)
+        elif flag == "update":
+            update_item_price(row, doc.start_date, doc.end_date)
+        
+
+
+def create_item_price(item, start_date, end_date):
+    price_list = frappe.get_cached_doc("Selling Settings")
+    if not frappe.db.exists("Item Price", {
+        "item_code": item.item, 
+        "item_name": item.item_name, 
+        "uom": item.uom, 
+        "price_list_rate": item.price
+        }):
+        item_price = frappe.new_doc("Item Price")
+        item_price.update({
+            "item_code": item.item,
+            "item_name": item.item_name,
+            "uom": item.uom,
+            "price_list_rate": item.price,
+            "valid_from": start_date,
+            "valid_upto": end_date,
+            "price_list": price_list.selling_price_list
+        })
+        item_price.save(ignore_permissions=True)
+        print(item_price)
+        frappe.msgprint("Created")
+
+def update_item_price(item, start_date, end_date):
+    price_list = frappe.get_cached_doc("Selling Settings")
+    item_price = frappe.get_doc("Item Price", {"item_code": item.item, "valid_from": start_date, "valid_upto": end_date})
+    item_price.update({
+        "item_code": item.item,
+        "item_name": item.item_name,
+        "uom": item.uom,
+        "price_list_rate": item.price,
+        "valid_from": start_date,
+        "valid_upto": end_date,
+        "price_list": price_list.selling_price_list
+    })
+    item_price.save(ignore_permissions=True)
+    print(item_price)
+    frappe.msgprint("Updated")
+
+def validate_item_price(item, start_date, end_date):
+    create = False
+    if not frappe.db.exists("Item Price", {
+        "item_code": item.item, 
+        "item_name": item.item_name, 
+        "uom": item.uom, 
+        "price_list_rate": item.price}):
+        create = True
+    if create and not frappe.db.exists("Item Price", {"price_list_rate": item.price}) and validate_existing_item_price(start_date, end_date):
+        return "update"
+    else :
+        return "create"
+
+def validate_existing_item_price(start_date, end_date):
+    update = False
+    if frappe.db.exists("Item Price", {"valid_from": start_date}) and frappe.db.exists("Item Price", {"valid_upto": end_date}):
+        update = True
+    return update
+
+    
+#     return update
+
+# @frappe.whitelist()
+# def get_item_name(contract, item):
+#     items = {}
+#     contract = frappe.get_doc("Contract", contract)
+#     print(contract)
+#     for row in contract.item_detail:
+#         items[row.item] = row.item_name
+    
+#     if item in items.keys():
+#         print(items[item])
+#         return items[item]
