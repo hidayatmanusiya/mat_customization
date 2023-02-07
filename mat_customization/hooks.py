@@ -113,7 +113,7 @@ doc_events = {
 		"validate": "mat_customization.utils.count_working_hours"
 	},
 	"Contract": {
-        "validate": "mat_customization.utils.make_item_price"
+        "on_submit": "mat_customization.utils.make_item_price"
     }
 }
 
