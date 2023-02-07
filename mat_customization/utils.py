@@ -132,17 +132,17 @@ def custom_query(doctype, txt, searchfield, start, page_len, filters):
 @frappe.whitelist()
 def make_item_price(doc, method):
     for row in doc.item_detail:
-        flag = validate_item_price(row, doc.start_date, doc.end_date)
+        flag = validate_item_price(row, doc.start_date, doc.end_date, doc.party_name)
         if flag == "create":
-            create_item_price(row, doc.start_date, doc.end_date)
+            create_item_price(row, doc.start_date, doc.end_date, doc.party_name)
         elif flag == "update":
-            update_item_price(row, doc.start_date, doc.end_date)
+            update_item_price(row, doc.start_date, doc.end_date, doc.party_name)
         else:
             continue
         
 
 
-def create_item_price(item, start_date, end_date):
+def create_item_price(item, start_date, end_date, customer):
     price_list = frappe.get_cached_doc("Selling Settings")
     item_price = frappe.new_doc("Item Price")
     item_price.update({
@@ -152,19 +152,21 @@ def create_item_price(item, start_date, end_date):
         "price_list_rate": item.price,
         "valid_from": start_date,
         "valid_upto": end_date,
-        "price_list": price_list.selling_price_list
+        "price_list": price_list.selling_price_list,
+        "customer": customer
     })
     item_price.save(ignore_permissions=True)
         # print(item_price)
         # frappe.msgprint("Created")
 
-def update_item_price(item, start_date, end_date):
+def update_item_price(item, start_date, end_date, customer):
     price_list = frappe.get_cached_doc("Selling Settings")
     item_price = frappe.get_doc("Item Price", {
         "item_code": item.item, 
         "valid_from": start_date, 
         "valid_upto": end_date,
-        "uom": item.uom
+        "uom": item.uom,
+        "customer": customer
         })
     item_price.update({
         "item_code": item.item,
@@ -173,13 +175,14 @@ def update_item_price(item, start_date, end_date):
         "price_list_rate": item.price,
         "valid_from": start_date,
         "valid_upto": end_date,
-        "price_list": price_list.selling_price_list
+        "price_list": price_list.selling_price_list,
+        "customer": customer
     })
     item_price.save(ignore_permissions=True)
     # print(item_price)
     # frappe.msgprint("Updated")
 
-def validate_item_price(item, start_date, end_date):
+def validate_item_price(item, start_date, end_date, customer):
     create = False
     if not frappe.db.exists("Item Price", {
         "item_code": item.item, 
@@ -187,16 +190,17 @@ def validate_item_price(item, start_date, end_date):
         "uom": item.uom, 
         "price_list_rate": item.price,
         "valid_from": start_date,
-        "valid_upto": end_date
+        "valid_upto": end_date,
+        "customer": customer
         }):
         create = True
-        if create and validate_existing_uom(item, start_date, end_date):
+        if create and validate_existing_uom(item, start_date, end_date, customer):
             return "update"
-        elif create and not validate_existing_item_price(item, start_date, end_date) and not validate_existing_uom(item, start_date, end_date):
+        elif create and not validate_existing_item_price(item, start_date, end_date, customer) and not validate_existing_uom(item, start_date, end_date, customer):
             return "create"
 
 
-def validate_existing_item_price(item, start_date, end_date):
+def validate_existing_item_price(item, start_date, end_date, customer):
     update = False
     if frappe.db.exists("Item Price", {
     "item_code": item.item, 
@@ -204,11 +208,12 @@ def validate_existing_item_price(item, start_date, end_date):
     "price_list_rate" : item.price,
     "valid_from": start_date, 
     "valid_upto": end_date,
+    "customer": customer
     }):
         update = True
     return update
 
-def validate_existing_uom(item, start_date, end_date):
+def validate_existing_uom(item, start_date, end_date, customer):
     update = False
     if frappe.db.exists("Item Price", {
     "item_code": item.item, 
@@ -216,6 +221,7 @@ def validate_existing_uom(item, start_date, end_date):
     "uom": item.uom,
     "valid_from": start_date, 
     "valid_upto": end_date,
+    "customer": customer
     }):
         update = True
     return update
